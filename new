@@ -1,0 +1,31 @@
+import urllib2
+import csv
+from bs4 import BeautifulSoup
+
+output_file = open('new.csv', 'w')
+writer = csv.writer(output_file)
+
+
+# Define the URL we want to scrape
+url = "https://www.mshp.dps.missouri.gov/HP68/search.jsp"
+
+# Get its HTML
+html = urllib2.urlopen(url).read()
+
+# Turn the HTML into a BeautifulSoup object
+soup = BeautifulSoup(html, "html.parser")
+
+# Use the find method of the BeautifulSoup object to get the item we want
+crash_table = soup.find('table', {'class': 'accidentOutput'})
+
+# Grab the rows from the table, represented as a list
+row_list = crash_table.find_all('tr')
+
+# Loop over each of the rows
+for row in row_list:
+
+    cell_list = row.find_all('td')
+
+    data = [cell.text.encode('utf-8').strip() for cell in cell_list]
+
+    writer.writerow(data)
